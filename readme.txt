@@ -32,7 +32,7 @@ How to setup
 
 -----------------------------------------------------------------------------------------------------------------------------------
 
-Training ideas using stats
+Training ideas using stats tracker
 
 Session Goal Format
 
