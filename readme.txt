@@ -32,18 +32,18 @@ How to setup
 
 -----------------------------------------------------------------------------------------------------------------------------------
 
-Training ideas using stats tracker
+Training ideas using stats tracker "theoritical"
 
 Session Goal Format
 
 Primary Goal
 
- . Score within +10% of your average in at least 3 runs
+ . Score within +5% of your average in at least 3 runs
  . Focuses on consistency and improvement over time
 
 Stretch Goal
 
- . Hit +20% above your average at least once
+ . Hit +10 above your average at least once
 
 Fallback Goal
 
