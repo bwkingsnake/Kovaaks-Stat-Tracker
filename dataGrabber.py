@@ -25,21 +25,17 @@ def createAndApendDataFiles(file, dataPath, outPutPath, printLogo, copyFiles):
     missCount = int(futils.getAttributes(file,"Miss Count"))
     Accuracy = round((hitCount / (hitCount + missCount)) * 100, 2)
     dateAndTime = futils.getDateTime(file)
-    
     fileName = (Scenario + ".csv")
     content = (str(Scenario) + "," + str(dateAndTime) + "," + str(Score) + "," + str(Accuracy))
     fileExist = futils.findFileInDirectory(fileName, dataPath)
 
     if fileExist == False:
-
         futils.createFile(fileName, dataPath)
-        futils.appendData(fileName, dataPath, "Scenario,DateAndTime,Score,Accuracy")
-        futils.appendData(fileName, dataPath, content)
-
+        futils.appendDataPath(fileName, dataPath, "Scenario,DateAndTime,Score,Accuracy")
+        futils.appendDataPath(fileName, dataPath, content)
     elif fileExist == True:
+        futils.appendDataPath(fileName, dataPath, content)
 
-        futils.appendData(fileName, dataPath, content)
-    
     if printLogo == True:
 
         averageScore = futils.getAverageScoreFromCSV(dataPath + "/" + fileName)
@@ -54,12 +50,24 @@ def createAndApendDataFiles(file, dataPath, outPutPath, printLogo, copyFiles):
         futils.copyCsvFile((dataPath + "/" + fileName), outPutPath)
 
         
-def init(kovaaksPath, dataPath, outPutPath):
-    kovaaksFiles = futils.getFilesInDirectory(kovaaksPath)
-    for file in kovaaksFiles:
-        file = (kovaaksPath + "/" + file)
-        createAndApendDataFiles(file, dataPath, outPutPath, False, False)
+def init(kovaaksPath, dataPath, outPutPath, processedFiles):
 
+    kovaaksFiles = futils.getFilesInDirectory(kovaaksPath)
+
+    for file in kovaaksFiles: 
+        hasBeenProcessed: bool = False
+
+        lines = futils.readLines(processedFiles)
+        for line in lines:
+            if file == line:
+                hasBeenProcessed = True
+
+        if hasBeenProcessed == False:
+            print("file has not been proccesed yet")
+            futils.appendData(processedFiles, file)
+            
+            file = (kovaaksPath + "/" + file)
+            createAndApendDataFiles(file, dataPath, outPutPath, False, False)
    
 def hasRanBefore(dataPath):
     if len(futils.getFilesInDirectory(dataPath)) == 0:
@@ -69,10 +77,11 @@ def hasRanBefore(dataPath):
 
 #initialize variables
 
+processedFiles = ("processedFiles.txt")
 kovaaksPath = (futils.readFile("cfg.txt"))
 dataPath = ("Data/")
 outPutPath = ("Output/")
-hasStarted = hasRanBefore(dataPath)
+hasStarted = False
 previousSnapshot = set(futils.getFilesInDirectory(kovaaksPath))
 
 #main logic
@@ -82,20 +91,16 @@ if futils.isADirectory(kovaaksPath) == False:
     input()
     sys.exit()
 
-
 if hasStarted == False:
     
     print(logo)
     print("-----------------------------------------------------------------------------------------------------------------------")
     print("Collecting Data please wait until all your data is collected")
-    init(kovaaksPath, dataPath, outPutPath)
-    print("All your data has been collected")
-    print("Scanning For New Files")
-else:
+    init(kovaaksPath, dataPath, outPutPath, processedFiles)
+    futils.clear_console()
     print(logo)
-    print("-----------------------------------------------------------------------------------------------------------------------")
-    print("Scanning For New Files")
-
+    print("All your data has been collected scanning for new files")
+  
 
 while True:
 
@@ -103,6 +108,7 @@ while True:
     file = futils.getDifference(currentSnapshot, previousSnapshot)
     
     if file:
+        futils.appendData(processedFiles, file)
         file = (kovaaksPath + "/" + file)
         futils.clear_console()
         createAndApendDataFiles(file, dataPath, outPutPath, True, True)
